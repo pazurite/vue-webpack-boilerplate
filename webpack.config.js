@@ -1,13 +1,16 @@
-const path = require('path')
+// const fs = require('fs')
 
-module.exports = {
-    mode: 'development',
-    // the starting point for our program
-    entry: './src/main.js',
-    output: {
-        // the absolute path for the directory where we want the output to be placed
-        path: path.resolve(__dirname, 'dist'),
-        // the name of the file that will contain our output
-        filename: 'main.bundle.js'
-    }
-}
+// const env = process.env.NODE_ENV
+
+// module.exports = env === 'production' ? require('./config/webpack.prod') : require('./config/webpack.dev.js')
+
+const webpackConfig = require('./config/webpack.dev.js')
+//
+// Object.defineProperty(RegExp.prototype, "toJSON", {
+//     value: RegExp.prototype.toString
+// });
+//
+// fs.writeFileSync(`./public/test.json`,JSON.stringify(webpackConfig, null, 4));
+
+
+module.exports = webpackConfig

@@ -1,7 +1,12 @@
 .DS_Store
+
+.yarn/
 node_modules/
 /dist
-/public
+
+*.env
+*.pnp
+*.yml
 
 # Log files
 npm-debug.log*

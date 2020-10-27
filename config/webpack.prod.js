@@ -1,45 +1,34 @@
-'use strict';
-
-const HashedModuleIdsPlugin = require('webpack').HashedModuleIdsPlugin;
-const {merge} = require('webpack-merge');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const { merge } = require('webpack-merge');
 const MiniCSSExtractPlugin = require('mini-css-extract-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
-const path = require('path')
+
+const { resolveRoot } = require('./helpers');
 const commonConfig = require('./webpack.common');
 
 module.exports = merge(commonConfig, {
     mode: 'production',
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: resolveRoot('dist'),
         publicPath: '/',
-        filename: 'js/[hash].js',
-        chunkFilename: 'js/[id].[hash].chunk.js'
+        filename: 'js/[name].js',
+        chunkFilename: 'js/[id].[contenthash].chunk.js'
     },
     module: {
         rules: [
             {
-                test: /\.css$/,
+                test: /\.(sc|sa|c)ss$/,
                 use: [
                     MiniCSSExtractPlugin.loader,
-                    {loader: 'css-loader', options: {sourceMap: true}},
-                ]
-            },
-            {
-                test: /\.(scss|sass)$/,
-                use: [
-                    MiniCSSExtractPlugin.loader,
-                    {loader: 'css-loader', options: {sourceMap: false}},
-                    {loader: 'sass-loader', options: {sourceMap: false}}
+                    { loader: 'css-loader', options: { sourceMap: false } },
+                    { loader: 'sass-loader', options: { sourceMap: false } }
                 ]
             }
         ]
     },
     plugins: [
         new MiniCSSExtractPlugin({
-            filename: 'css/[name].[hash].css',
-            chunkFilename: 'css/[id].[hash].css'
+            filename: 'css/[name].[contenthash].css',
+            chunkFilename: 'css/[id].[contenthash].css'
         }),
         new CompressionPlugin({
             filename: '[path].gz[query]',
@@ -47,23 +36,10 @@ module.exports = merge(commonConfig, {
             test: new RegExp('\\.(js|css)$'),
             threshold: 10240,
             minRatio: 0.8
-        }),
-        new HashedModuleIdsPlugin()
+        })
     ],
     optimization: {
         runtimeChunk: 'single',
-        minimizer: [
-            new OptimizeCSSAssetsPlugin({
-                cssProcessorPluginOptions: {
-                    preset: ['default', {discardComments: {removeAll: true}}],
-                }
-            }),
-            new UglifyJSPlugin({
-                cache: true,
-                parallel: true,
-                sourceMap: false
-            })
-        ],
         splitChunks: {
             chunks: 'all',
             maxInitialRequests: Infinity,
